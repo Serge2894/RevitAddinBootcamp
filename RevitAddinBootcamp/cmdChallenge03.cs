@@ -15,6 +15,8 @@ namespace RevitAddinBootcamp
 
             FurnitureInstance movingInstance1 = new FurnitureInstance("Classroom", "Desk", "Teacher", 1);
             FurnitureInstance movingInstance2 = new FurnitureInstance("Classroom", "Desk", "Student", 6);
+            FurnitureInstance movingInstance3 = new FurnitureInstance("Classroom", "Chair-Desk", "Default", 7);
+            FurnitureInstance movingInstance4 = new FurnitureInstance("Classroom", "Shelf", "Large", 1);
 
             List<FurnitureInstance> movingList = new List<FurnitureInstance> {movingInstance1, movingInstance2};
 

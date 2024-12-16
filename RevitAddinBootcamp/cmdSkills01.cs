@@ -15,7 +15,7 @@
 
             // Create string variable
             string text1 = "this is my test";
-            string text2 = "this is my test 3";
+            string text2 = "this is my test 4";
 
             // Combine the 2 strings
             string text3 = text1 + text2;

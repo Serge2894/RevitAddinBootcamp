@@ -97,7 +97,7 @@ namespace RevitAddinBootcamp.Common
 
             foreach (Room curRoom in roomCollector)
             {
-                if (curRoom.Name == roomname)
+                if (curRoom.Name.Contains(roomname))
                     return curRoom;
             }
             return null;

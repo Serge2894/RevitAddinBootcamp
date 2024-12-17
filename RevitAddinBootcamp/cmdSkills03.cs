@@ -67,6 +67,7 @@ namespace RevitAddinBootcamp
 
                     FamilyInstance curFamInstance = doc.Create.NewFamilyInstance(loc.Point, curFamSymbol, StructuralType.NonStructural);
 
+
                     string department = Utils.GetParameterValueAsString(curRoom2, "Department");
                     double area = Utils.GetParameterValueAsDouble(curRoom2, BuiltInParameter.ROOM_AREA);
                     double area2 = Utils.GetParameterValueAsDouble(curRoom, "Area");

@@ -18,19 +18,27 @@ namespace RevitAddinBootcamp
             FurnitureInstance movingInstance3 = new FurnitureInstance("Classroom", "Chair-Desk", "Default", 7);
             FurnitureInstance movingInstance4 = new FurnitureInstance("Classroom", "Shelf", "Large", 1);
 
-            List<FurnitureInstance> movingList = new List<FurnitureInstance> {movingInstance1, movingInstance2};
-
-            foreach (FurnitureInstance Instance in movingList)
+            List<FurnitureInstance> movingList = new List<FurnitureInstance> {movingInstance1, movingInstance2, movingInstance3, movingInstance4};
+            using (Transaction t = new Transaction(doc))
             {
-                Room roomname = Utils.GetRoomByName(doc, Instance.RoomName);
-                FamilySymbol curFamSymbol = Utils.GetFamilySymbolByName(doc, Instance.FamilyName, Instance.TypeName);
-                curFamSymbol.Activate();
+                t.Start("Move in Furniture");
+                    foreach (FurnitureInstance Instance in movingList)
+                    {
+                        List<Room> roomList = Utils.GetRoomsByName(doc, Instance.RoomName);
+                        foreach (Room room in roomList)
+                        {
+                            FamilySymbol curFamSymbol = Utils.GetFamilySymbolByName(doc, Instance.FamilyName, Instance.TypeName);
+                            curFamSymbol.Activate();
+                                for (int i = 0; i < Instance.Count; i++)
+                                {
+                                LocationPoint loc = room.Location as LocationPoint;
+                                FamilyInstance curFamInstance = doc.Create.NewFamilyInstance(loc.Point, curFamSymbol, StructuralType.NonStructural);
+                                } 
+                        }
 
-                for (int i = 0; i < Instance.Count; i++)
-                {
-                LocationPoint loc = roomname.Location as LocationPoint;
-                FamilyInstance curFamInstance = doc.Create.NewFamilyInstance(loc.Point, curFamSymbol, StructuralType.NonStructural);
-                }
+                    }
+                t.Commit();
+
             }
             return Result.Succeeded;
         }

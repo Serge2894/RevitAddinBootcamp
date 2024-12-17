@@ -1,5 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 using System.Windows.Controls;
+using static RevitAddinBootcamp.MovingList;
 
 namespace RevitAddinBootcamp.Common
 {
@@ -99,6 +100,21 @@ namespace RevitAddinBootcamp.Common
             {
                 if (curRoom.Name.Contains(roomname))
                     return curRoom;
+            }
+            return null;
+        }
+
+        public static List<Room> GetRoomsByName(Document doc, string roomname)
+        {
+            List<Room> roomsList = new List<Room>();
+
+            FilteredElementCollector roomCollector = new FilteredElementCollector(doc);
+            roomCollector.OfCategory(BuiltInCategory.OST_Rooms);
+
+            foreach (Room curRoom in roomCollector)
+            {
+                if (curRoom.Name.Contains(roomname))
+                    roomsList.Add(curRoom);
             }
             return null;
         }

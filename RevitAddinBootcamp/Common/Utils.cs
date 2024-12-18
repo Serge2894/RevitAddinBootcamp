@@ -116,7 +116,7 @@ namespace RevitAddinBootcamp.Common
                 if (curRoom.Name.Contains(roomname))
                     roomsList.Add(curRoom);
             }
-            return null;
+            return roomsList;
         }
 
         // Ribbon methods

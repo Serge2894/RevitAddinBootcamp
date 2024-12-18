@@ -1,4 +1,5 @@
 ﻿using RevitAddinBootcamp.Common;
+using System.Linq;
 using static RevitAddinBootcamp.MovingList;
 
 namespace RevitAddinBootcamp
@@ -13,33 +14,67 @@ namespace RevitAddinBootcamp
             UIDocument uidoc = uiapp.ActiveUIDocument;
             Document doc = uidoc.Document;
 
-            FurnitureInstance movingInstance1 = new FurnitureInstance("Classroom", "Desk", "Teacher", 1);
-            FurnitureInstance movingInstance2 = new FurnitureInstance("Classroom", "Desk", "Student", 6);
-            FurnitureInstance movingInstance3 = new FurnitureInstance("Classroom", "Chair-Desk", "Default", 7);
-            FurnitureInstance movingInstance4 = new FurnitureInstance("Classroom", "Shelf", "Large", 1);
+            List<FurnitureInstance> movingList = new List<FurnitureInstance>();
 
-            List<FurnitureInstance> movingList = new List<FurnitureInstance> {movingInstance1, movingInstance2, movingInstance3, movingInstance4};
+            movingList.Add(new FurnitureInstance("Classroom", "Desk", "Teacher", 1));
+            movingList.Add(new FurnitureInstance("Classroom", "Desk", "Student", 6));
+            movingList.Add(new FurnitureInstance("Classroom", "Chair-Desk", "Default", 7));
+            movingList.Add(new FurnitureInstance("Classroom", "Shelf", "Large", 1));
+            movingList.Add(new FurnitureInstance("Office", "Desk", "Teacher", 1));
+            movingList.Add(new FurnitureInstance("Office", "Chair-Executive", "Default", 1));
+            movingList.Add(new FurnitureInstance("Office", "Shelf", "Small", 1));
+            movingList.Add(new FurnitureInstance("Office", "Chair-Task", "Default", 1));
+            movingList.Add(new FurnitureInstance("VR Lab", "Table-Rectangular", "Small", 1));
+            movingList.Add(new FurnitureInstance("VR Lab", "Table-Rectangular", "Large", 8));
+            movingList.Add(new FurnitureInstance("VR Lab", "Chair-Task", "Default", 9));
+            movingList.Add(new FurnitureInstance("Computer Lab", "Desk", "Teacher", 1));
+            movingList.Add(new FurnitureInstance("Computer Lab", "Desk", "Student", 10));
+            movingList.Add(new FurnitureInstance("Computer Lab", "Chair-Desk", "Default", 11));
+            movingList.Add(new FurnitureInstance("Computer Lab", "Shelf", "Large", 2));
+            movingList.Add(new FurnitureInstance("Student Lounge", "Sofa", "Large", 2));
+            movingList.Add(new FurnitureInstance("Student Lounge", "Table-Coffee", "Square", 2));
+            movingList.Add(new FurnitureInstance("Teacher Lounge", "Sofa", "Small", 2));
+            movingList.Add(new FurnitureInstance("Teacher Lounge", "Table-Coffee", "Large", 1));
+            movingList.Add(new FurnitureInstance("Waiting", "Chair-Waiting", "Default", 2));
+            movingList.Add(new FurnitureInstance("Waiting", "Table-Coffee", "Large", 1));
+
+            int totalcounter = 0;
+
             using (Transaction t = new Transaction(doc))
             {
                 t.Start("Move in Furniture");
-                    foreach (FurnitureInstance Instance in movingList)
+                foreach (FurnitureInstance Instance in movingList)
+                {
+                    List<Room> roomList = Utils.GetRoomsByName(doc, Instance.RoomName);
+                    foreach (Room room in roomList)
                     {
-                        List<Room> roomList = Utils.GetRoomsByName(doc, Instance.RoomName);
-                        foreach (Room room in roomList)
-                        {
-                            FamilySymbol curFamSymbol = Utils.GetFamilySymbolByName(doc, Instance.FamilyName, Instance.TypeName);
-                            curFamSymbol.Activate();
-                                for (int i = 0; i < Instance.Count; i++)
-                                {
-                                LocationPoint loc = room.Location as LocationPoint;
-                                FamilyInstance curFamInstance = doc.Create.NewFamilyInstance(loc.Point, curFamSymbol, StructuralType.NonStructural);
-                                } 
-                        }
+                        int roomCounter = 0;
 
+                        FamilySymbol curFamSymbol = Utils.GetFamilySymbolByName(doc, Instance.FamilyName, Instance.TypeName);
+                        curFamSymbol.Activate();
+                        for (int i = 0; i < Instance.Count; i++)
+                        {
+                            LocationPoint loc = room.Location as LocationPoint;
+                            FamilyInstance curFamInstance = doc.Create.NewFamilyInstance(loc.Point, curFamSymbol, StructuralType.NonStructural);
+                            totalcounter++;
+                            roomCounter++;
+                        }
+                        //4. update furniture count for room
+                        Parameter roomCount = room.LookupParameter("Furniture Count");
+
+                        if (roomCount != null)
+                        {
+                            roomCount.Set(roomCounter);
+                        }
                     }
+                }
                 t.Commit();
 
             }
+
+            //5. alert user
+            TaskDialog.Show("Complete", $"You moved {totalcounter} pieces of furniture into the building. Great work!");
+
             return Result.Succeeded;
         }
         internal static PushButtonData GetButtonData()
